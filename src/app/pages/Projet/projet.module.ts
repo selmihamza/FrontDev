@@ -13,13 +13,12 @@ import {
 } from "@nebular/theme";
 
 import { ThemeModule } from "../../@theme/theme.module";
-import { FormsRoutingModule } from "./forms-routing.module";
-import { FormsComponent } from "./forms.component";
-import { FormInputsComponent } from "./form-inputs/form-inputs.component";
-import { FormLayoutsComponent } from "./form-layouts/form-layouts.component";
-import { DatepickerComponent } from "./datepicker/datepicker.component";
-import { ButtonsComponent } from "./buttons/buttons.component";
+import { ProjetRoutingModule } from "./projet-routing.module";
+import { ProjetComponent } from "./projet.component";
+import { Ng2SmartTableModule } from "ng2-smart-table";
 import { FormsModule as ngFormsModule } from "@angular/forms";
+import { AddProjectComponent } from "./add-project/add-project.component";
+import { ListProjectComponent } from "./list-project/list-project.component";
 
 @NgModule({
   imports: [
@@ -32,17 +31,12 @@ import { FormsModule as ngFormsModule } from "@angular/forms";
     NbCheckboxModule,
     NbRadioModule,
     NbDatepickerModule,
-    FormsRoutingModule,
+    ProjetRoutingModule,
     NbSelectModule,
     NbIconModule,
+    Ng2SmartTableModule,
     ngFormsModule
   ],
-  declarations: [
-    FormsComponent,
-    ButtonsComponent,
-    FormInputsComponent,
-    FormLayoutsComponent,
-    DatepickerComponent
-  ]
+  declarations: [ProjetComponent, AddProjectComponent, ListProjectComponent]
 })
-export class FormsModule {}
+export class ProjetModule {}

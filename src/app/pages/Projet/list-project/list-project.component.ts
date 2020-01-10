@@ -1,13 +1,16 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { LocalDataSource } from "ng2-smart-table";
-import { SmartTableData } from "../../../@core/data/smart-table";
+//import { SmartTableData } from "../../../@core/data/smart-table";
+import { ServiceProjetService } from "../services/service-projet.service";
 
 @Component({
-  selector: "ngx-smart-table",
-  templateUrl: "./smart-table.component.html",
-  styleUrls: ["./smart-table.component.scss"]
+  selector: "ngx-list-project",
+  templateUrl: "./list-project.component.html",
+  styleUrls: ["./list-project.component.scss"]
 })
-export class SmartTableComponent {
+export class ListProjectComponent implements OnInit {
+  ngOnInit() {}
+
   settings = {
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
@@ -28,39 +31,40 @@ export class SmartTableComponent {
         title: "ID",
         type: "number"
       },
-      firstName: {
-        title: "First Name",
+      name: {
+        title: "Name",
         type: "string"
       },
-      lastName: {
-        title: "Last Name",
+      budget: {
+        title: "Budget",
         type: "string"
       },
-      username: {
-        title: "Username",
+      deadline: {
+        title: "Deadline",
         type: "string"
       },
-      email: {
-        title: "E-mail",
+      description: {
+        title: "Description",
         type: "string"
-      },
-      age: {
-        title: "Age",
-        type: "number"
       }
     }
   };
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData) {
-    const data = this.service.getData();
-    this.source.load(data);
+  constructor(private service: ServiceProjetService) {
+    this.service.getProjectList().subscribe((data: any) => {
+      //console.log(JSON.stringify(data));
+      this.source.load(data);
+    });
   }
 
   onDeleteConfirm(event): void {
     if (window.confirm("Are you sure you want to delete?")) {
       event.confirm.resolve();
+
+      console.log(event.data.id);
+      this.service.deleteProject(event.data.id);
     } else {
       event.confirm.reject();
     }
