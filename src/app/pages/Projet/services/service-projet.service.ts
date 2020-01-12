@@ -28,20 +28,28 @@ export class ServiceProjetService {
   //   return this.http.post(`${this.baseUrl}`, interfaceProjet);
   // }
 
-  // updateProject(id: number, value: any): Observable<Object> {
-  //   return this.http.put(`${this.baseUrl}/${id}`, value);
-  // }
-
-  deleteProject(id: number): Observable<any> {
+  update(interfaceProjet): Observable<any> {
     var reqHeader = new HttpHeaders({
       "Content-Type": "application/json;charset=utf-8"
       //Authorization: "Bearer " + localStorage.getItem("token")
     });
-    console.log(this.baseUrl + "?id=" + id);
-
-    return this.http.delete(this.baseUrl + "?id=" + id, {
+    return this.http.put(this.baseUrl, interfaceProjet, {
       headers: reqHeader
     });
+  }
+
+  deleteProject(id: number): void {
+    var reqHeader = new HttpHeaders({
+      "Content-Type": "application/json;charset=utf-8"
+      //Authorization: "Bearer " + localStorage.getItem("token")
+    });
+    this.http
+      .delete(this.baseUrl + "/" + id, {
+        headers: reqHeader
+      })
+      .toPromise()
+      .then(result => console.log(result))
+      .catch(err => console.log(err));
   }
 
   getProjectList() {

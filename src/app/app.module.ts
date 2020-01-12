@@ -29,6 +29,8 @@ import {
   NbTokenStorage,
   NbTokenLocalStorage
 } from "@nebular/auth";
+import { AuthGuard } from "./auth/auth-guard.service";
+import { GlobalService } from "./services/global.service";
 
 const formSetting: any = {
   redirectDelay: 0,
@@ -148,6 +150,8 @@ const formSetting: any = {
   providers: [
     // ...
     // AuthGuard,
+    AuthGuard,
+    GlobalService,
     { provide: NbTokenStorage, useClass: NbTokenLocalStorage }
   ]
 })

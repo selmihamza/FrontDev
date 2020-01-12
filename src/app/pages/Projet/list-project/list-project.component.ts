@@ -1,8 +1,16 @@
 import { Component, OnInit } from "@angular/core";
 import { LocalDataSource } from "ng2-smart-table";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Router } from "@angular/router";
+
 //import { SmartTableData } from "../../../@core/data/smart-table";
 import { ServiceProjetService } from "../services/service-projet.service";
-
+interface InterfaceProjet {
+  name: String;
+  budget: String;
+  deadline: String;
+  description: String;
+}
 @Component({
   selector: "ngx-list-project",
   templateUrl: "./list-project.component.html",
@@ -15,12 +23,14 @@ export class ListProjectComponent implements OnInit {
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>'
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>'
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
@@ -51,10 +61,9 @@ export class ListProjectComponent implements OnInit {
   };
 
   source: LocalDataSource = new LocalDataSource();
-
-  constructor(private service: ServiceProjetService) {
+  interfaceProjet: InterfaceProjet;
+  constructor(private service: ServiceProjetService, private router: Router) {
     this.service.getProjectList().subscribe((data: any) => {
-      //console.log(JSON.stringify(data));
       this.source.load(data);
     });
   }
@@ -62,11 +71,42 @@ export class ListProjectComponent implements OnInit {
   onDeleteConfirm(event): void {
     if (window.confirm("Are you sure you want to delete?")) {
       event.confirm.resolve();
-
-      console.log(event.data.id);
       this.service.deleteProject(event.data.id);
     } else {
       event.confirm.reject();
     }
   }
+
+  onCreateConfirm(event) {
+    if (event.newData) {
+      const { name, budget, deadline, description } = event.newData;
+      this.service.Add({ name, budget, deadline, description }).subscribe(
+        res => {
+          this.router.navigate(["/pages/project/ListProject"]);
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        }
+      );
+      event.confirm.resolve(event);
+    } else {
+      event.confirm.reject();
+    }
+  }
+
+  onSaveConfirm = event => {
+    if (event.newData) {
+      this.service.update(event.newData).subscribe(
+        res => {
+          this.router.navigate(["/pages/project/ListProject"]);
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        }
+      );
+      event.confirm.resolve(event.newData);
+    } else {
+      event.confirm.reject();
+    }
+  };
 }
