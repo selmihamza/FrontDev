@@ -11,6 +11,11 @@ const routes: Routes = [
     component: ProjetComponent,
     children: [
       {
+        path: "tasks",
+        loadChildren: () =>
+          import("../tasks/tasks.module").then(m => m.TasksModule)
+      },
+      {
         path: "addProject",
         component: AddProjectComponent
       },

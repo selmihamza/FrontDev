@@ -1,23 +1,35 @@
 import { Component, OnInit } from "@angular/core";
 import { LocalDataSource } from "ng2-smart-table";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 
 //import { SmartTableData } from "../../../@core/data/smart-table";
-import { ServiceProjetService } from "../services/service-projet.service";
+import { ServiceTaskService } from "../services/service-task.service";
 interface InterfaceProjet {
   name: String;
-  budget: String;
   deadline: String;
   description: String;
 }
 @Component({
-  selector: "ngx-list-project",
-  templateUrl: "./list-project.component.html",
-  styleUrls: ["./list-project.component.scss"]
+  selector: "ngx-list-task",
+  templateUrl: "./list-task.component.html",
+  styleUrls: ["./list-task.component.scss"]
 })
-export class ListProjectComponent implements OnInit {
-  ngOnInit() {}
+export class ListTaskComponent implements OnInit {
+  projet: any;
+
+  ngOnInit() {
+    if (this.route && this.route.data) {
+      this.getData();
+    }
+  }
+  async getData() {
+    this.route.data.subscribe(routeData => {
+      const data = routeData["data"];
+      this.projet = data;
+      this.source.load(data.taches);
+    });
+  }
 
   settings = {
     add: {
@@ -45,10 +57,6 @@ export class ListProjectComponent implements OnInit {
         title: "Name",
         type: "string"
       },
-      budget: {
-        title: "Budget",
-        type: "string"
-      },
       deadline: {
         title: "Deadline",
         type: "string"
@@ -62,16 +70,18 @@ export class ListProjectComponent implements OnInit {
 
   source: LocalDataSource = new LocalDataSource();
   interfaceProjet: InterfaceProjet;
-  constructor(private service: ServiceProjetService, private router: Router) {
-    this.service.getProjectList().subscribe((data: any) => {
-      this.source.load(data);
-    });
+  constructor(
+    private service: ServiceTaskService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    console.log(this.route);
   }
 
   onDeleteConfirm(event): void {
     if (window.confirm("Are you sure you want to delete?")) {
       event.confirm.resolve();
-      this.service.deleteProject(event.data.id);
+      this.service.deleteTask(event.data.id);
     } else {
       event.confirm.reject();
     }
@@ -79,15 +89,17 @@ export class ListProjectComponent implements OnInit {
 
   onCreateConfirm(event) {
     if (event.newData) {
-      const { name, budget, deadline, description } = event.newData;
-      this.service.Add({ name, budget, deadline, description }).subscribe(
-        res => {
-          this.router.navigate(["/pages/project/ListProject"]);
-        },
-        (error: HttpErrorResponse) => {
-          console.log(error.message);
-        }
-      );
+      const { name, deadline, description } = event.newData;
+      this.service
+        .Add({ name, deadline, description }, this.projet.id)
+        .subscribe(
+          res => {
+            this.router.navigate(["/pages/tasks/ListTask"]);
+          },
+          (error: HttpErrorResponse) => {
+            console.log(error.message);
+          }
+        );
       event.confirm.resolve(event);
     } else {
       event.confirm.reject();
@@ -96,9 +108,9 @@ export class ListProjectComponent implements OnInit {
 
   onSaveConfirm = event => {
     if (event.newData) {
-      this.service.update(event.newData).subscribe(
+      this.service.update(event.newData, this.projet.id).subscribe(
         res => {
-          this.router.navigate(["/pages/project/ListProject"]);
+          this.router.navigate(["/pages/tasks/ListTask"]);
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
@@ -109,9 +121,4 @@ export class ListProjectComponent implements OnInit {
       event.confirm.reject();
     }
   };
-
-  onCustomAction(event) {
-    this.router.navigate(["/pages/project/tasks/" + event.data.id]);
-    //console.log(event.data.id);
-  }
 }

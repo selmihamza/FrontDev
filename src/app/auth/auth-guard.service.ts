@@ -10,9 +10,7 @@ export class AuthGuard implements CanActivate {
     private authService: NbAuthService,
     private globals: GlobalService,
     private router: Router
-  ) {
-    console.log(this.globals.user);
-  }
+  ) {}
 
   canActivate() {
     return this.authService.isAuthenticated().pipe(

@@ -1,13 +1,10 @@
 <nb-card>
-  <nb-card-header>
-    Lists Project
-  </nb-card-header>
+  <nb-card-header> Project : {{ projet.name }}</nb-card-header>
 
   <nb-card-body>
     <ng2-smart-table
       [settings]="settings"
       [source]="source"
-      (userRowSelect)="onCustomAction($event)"
       (deleteConfirm)="onDeleteConfirm($event)"
       (createConfirm)="onCreateConfirm($event)"
       (editConfirm)="onSaveConfirm($event)"
